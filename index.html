@@ -188,6 +188,22 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
 .evd span:first-child::first-letter{text-transform:uppercase}
 .evlink{display:inline-block;margin-top:14px;font-size:13px;color:var(--mute)}
 @media(max-width:760px){.tabs{margin-top:14px}.tabs a{padding:0 14px}.cal{display:none}.wlist{display:block}.dlist{padding:4px 14px}.row{grid-template-columns:64px minmax(0,1fr);gap:12px}.row .h{font-size:24px}.gap{padding-left:76px}.sub{width:100%}.sub button{flex:1}}
+.intro{position:fixed;inset:0;z-index:30;background:radial-gradient(ellipse at 50% 60%,hsl(var(--h) 90% 35% / .28) 0%,transparent 70%),var(--bg);display:grid;place-items:center;text-align:center;padding:24px;transition:opacity .6s,visibility .6s}
+.intro.out{opacity:0;visibility:hidden}
+.intro h1{font-weight:300;font-size:clamp(44px,10vw,112px);letter-spacing:-.02em;background:none;color:var(--ink);width:auto;line-height:1.1}
+.intro h1 span{display:inline-block}
+.intro h1 .w{white-space:nowrap}
+.intro h1 .name{color:hsl(calc(var(--h) + var(--i,0)*30) 100% 64%);font-weight:600}
+.intro .line{width:0;height:3px;border-radius:2px;background:var(--rgb);margin:28px auto 0}
+.enter{margin-top:44px;min-height:56px;padding:0 44px;border:0;border-radius:28px;background:var(--rgb);background-size:200% 100%;color:#0a0a0d;font:600 18px/1 Inter,sans-serif;cursor:pointer;box-shadow:0 0 30px -6px hsl(var(--h) 100% 60% / .7);transition:transform .15s}
+.enter:hover{transform:scale(1.05)}
+.enter:active{transform:scale(.97)}
+@media(prefers-reduced-motion:no-preference){
+.intro h1 span{opacity:0;transform:translateY(.4em);animation:up .6s cubic-bezier(.2,.8,.2,1) forwards}
+.intro .enter{opacity:0;animation:fade 1s 1.4s ease forwards}
+.intro .line{animation:grow 1s .9s ease forwards}
+@keyframes up{to{opacity:1;transform:none}}@keyframes fade{to{opacity:1}}@keyframes grow{to{width:120px}}}
+@media(prefers-reduced-motion:reduce){.intro .line{width:120px}}
 @media(max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}.side{position:static}}
 @media(max-width:600px){
 .add{grid-template-columns:minmax(0,1fr);padding:16px}
@@ -218,6 +234,14 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
 </style>
 </head>
 <body>
+<section class="intro" id="intro" aria-label="Accueil">
+  <div>
+    <h1 id="hello" aria-label="Bonne journée boss">Bonne journée boss</h1>
+    <div class="line"></div>
+    <button type="button" class="enter" id="enter">Entrer</button>
+  </div>
+</section>
+
 <section class="auth" id="auth" hidden aria-label="Connexion">
   <form class="authcard" id="authForm">
     <h2>Connexion</h2>
@@ -550,6 +574,19 @@ $('#cOk').addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden){closeConfirm();return}if(e.key==='/'&&!e.target.matches('input,select,textarea')){e.preventDefault();$('#newTask').focus()}});
 
 render();
+}
+</script>
+<script>
+/* ---------- page d'entrée ---------- */
+{
+const intro=document.getElementById('intro'),h=document.getElementById('hello');
+const words=[['Bonne',0],['journée',0],['boss',1]];let i=0;
+/* une lettre = un span animé, un mot = un bloc insécable (pas de coupure au milieu d'un mot) */
+h.innerHTML=words.map(([w,n])=>`<span class="w" aria-hidden="true">${[...w].map(ch=>`<span${n?' class="name"':''} style="--i:${i};animation-delay:${(0.05*i++).toFixed(2)}s">${ch}</span>`).join('')}</span>`).join(' ');
+const go=()=>{intro.classList.add('out');document.removeEventListener('keydown',key)};
+const key=e=>{if(e.key==='Enter'&&!intro.classList.contains('out')){e.preventDefault();go()}};
+document.getElementById('enter').addEventListener('click',go);
+document.addEventListener('keydown',key);
 }
 </script>
 <script>
