@@ -41,7 +41,7 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
 .prog-n small{font-size:15px;font-family:Inter,sans-serif;font-weight:400;color:var(--mute);margin-left:4px}
 .bar{flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden;min-width:120px}
 .bar i{display:block;height:100%;background:var(--rgb);border-radius:5px;transition:width .4s ease}
-.wrap{max-width:1240px;margin:22px auto 40px;padding:0 max(5vw,16px);display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start}
+.wrap{width:min(1240px,calc(100% - 2*max(5vw,16px)));margin:22px auto 40px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start}
 .page{order:1;background:var(--panel);border-radius:16px;box-shadow:0 0 0 1px hsl(var(--h) 100% 60% / .35),0 0 40px -12px hsl(var(--h) 100% 55% / .45);overflow:hidden}
 .side{order:2;background:var(--panel);border-radius:16px;padding:20px;box-shadow:0 0 0 1px hsl(var(--h) 100% 60% / .18);position:sticky;top:16px}
 .side h2{font-weight:600;font-size:22px;margin:0 0 14px}
@@ -116,6 +116,30 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,160%);background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 8px 8px 16px;display:flex;gap:14px;align-items:center;font-size:14px;transition:transform .25s ease;z-index:9;max-width:calc(100% - 32px)}
 .toast.on{transform:translate(-50%,0)}
 .toast button{border:0;background:none;color:#d6002f;font-weight:600;min-height:36px;padding:0 8px}
+.tabs{max-width:1240px;margin:18px auto 0;display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs a{flex:none;display:flex;align-items:center;min-height:46px;padding:0 18px;color:var(--mute);text-decoration:none;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a[aria-current]{color:var(--ink);border-bottom-color:var(--acc)}
+.tabs a:hover{color:var(--ink)}
+.edt{width:min(1240px,calc(100% - 2*max(5vw,16px)));margin:22px auto 40px}
+.edt-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.edt-bar h2{font-weight:600;font-size:clamp(22px,3vw,28px)}
+.edt-st{font-size:13px;color:var(--mute);margin-top:4px}
+.edt-st a{color:var(--acc)}
+.nav{display:flex;flex-wrap:wrap;gap:8px}
+.nav button{min-height:44px;min-width:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:500}
+.nav button:hover{border-color:var(--acc)}
+.calwrap{background:var(--panel);border-radius:16px;padding:10px;box-shadow:0 0 0 1px hsl(var(--h) 100% 60% / .35),0 0 40px -12px hsl(var(--h) 100% 55% / .45)}
+.vtscroll{overflow-x:auto;border-radius:10px;background:#fff;-webkit-overflow-scrolling:touch}
+.vtscroll img{display:block;max-width:none;transition:opacity .2s}
+.vtscroll img.loading{opacity:.35}
+.vterr{padding:40px 20px;text-align:center;color:var(--mute)}
+.vterr b{display:block;font:600 20px/1.2 "Inter Tight",sans-serif;color:var(--ink);margin-bottom:6px}
+.vtset{margin-top:14px;font-size:13px;color:var(--mute)}
+.vtset summary{cursor:pointer;min-height:32px;display:inline-flex;align-items:center}
+.vtset form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.vtset input{min-height:40px;width:7em;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg);font-size:16px}
+.vtset button{min-height:40px;padding:0 14px;border:0;border-radius:10px;background:var(--acc);color:#0a0a0d;font-weight:600}
+@media(max-width:760px){.tabs{margin-top:14px}.tabs a{padding:0 14px}.calwrap{padding:6px}}
 @media(max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}.side{position:static}}
 @media(max-width:600px){
 .add{grid-template-columns:minmax(0,1fr);padding:16px}
@@ -170,9 +194,13 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
       <div class="bar" aria-hidden="true"><i id="progBar" style="width:0"></i></div>
     </div>
   </div>
+  <nav class="tabs" aria-label="Onglets">
+    <a href="#taches" data-tab="taches">Tâches</a>
+    <a href="#edt" data-tab="edt">Emploi du temps</a>
+  </nav>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="tasksView">
   <section class="page" aria-label="Tâches">
     <form class="add" id="addForm" autocomplete="off">
       <div class="add-main">
@@ -228,6 +256,32 @@ h1{font-weight:600;font-size:clamp(26px,4vw,36px);background:var(--rgb);-webkit-
     <button type="button" class="logout" id="logoutBtn" hidden>Déconnexion</button>
   </aside>
 </main>
+
+<section class="edt" id="edtView" hidden aria-label="Emploi du temps">
+  <div class="edt-bar">
+    <div>
+      <h2 id="wkTitle">Emploi du temps</h2>
+      <div class="edt-st">Depuis VT Agenda · <a id="vtOpen" href="https://vt.iut-amiens.fr/gc2021/">ouvrir le site</a></div>
+    </div>
+    <div class="nav">
+      <button type="button" id="wkPrev" aria-label="Semaine précédente">‹</button>
+      <button type="button" id="wkNow">Cette semaine</button>
+      <button type="button" id="wkNext" aria-label="Semaine suivante">›</button>
+    </div>
+  </div>
+  <div class="calwrap">
+    <div class="vtscroll" id="vtScroll"><img id="vtImg" alt="Emploi du temps de la semaine"></div>
+    <div class="vterr" id="vtErr" hidden><b>Emploi du temps indisponible</b>VT Agenda ne répond pas, ou ton code de groupe n'est pas le bon. Réessaie plus tard ou ouvre le site.</div>
+  </div>
+  <details class="vtset">
+    <summary>Changer de groupe</summary>
+    <form id="vtForm">
+      <label for="vtCode">Code VT (current_student dans l'adresse de VT Agenda)</label>
+      <input id="vtCode" inputmode="numeric" pattern="[0-9]+" required>
+      <button type="submit">Enregistrer</button>
+    </form>
+  </details>
+</section>
 
 <div class="modal" id="confirm" hidden role="dialog" aria-modal="true" aria-labelledby="cTitle">
   <div class="box">
@@ -440,6 +494,55 @@ $('#cOk').addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden){closeConfirm();return}if(e.key==='/'&&!e.target.matches('input,select,textarea')){e.preventDefault();$('#newTask').focus()}});
 
 render();
+}
+</script>
+<script>
+/* ---------- onglets + emploi du temps (image générée par VT Agenda) ---------- */
+{
+const $=s=>document.querySelector(s);
+const VT='https://vt.iut-amiens.fr/gc2021',LSK='vt-code',DEF='64';
+let code=DEF;try{code=localStorage.getItem(LSK)||DEF}catch(e){}
+const monday=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-(x.getDay()+6)%7);return x};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const thisWeek=()=>{const t=new Date(),w=monday(t);return t.getDay()===0||t.getDay()===6?addDays(w,7):w};
+function isoWeek(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()+3-(d.getDay()+6)%7));const y=t.getUTCFullYear();const w1=new Date(Date.UTC(y,0,4));return{y,w:1+Math.round(((t-w1)/864e5-3+(w1.getUTCDay()+6)%7)/7)}}
+let weekStart=thisWeek(),loaded=false;
+
+function show(){
+  loaded=true;
+  const {y,w}=isoWeek(weekStart),sat=addDays(weekStart,5);
+  const f=(d,o)=>d.toLocaleDateString('fr-FR',o);
+  $('#wkTitle').textContent=`Semaine ${w} · du ${f(weekStart,weekStart.getMonth()===sat.getMonth()?{day:'numeric'}:{day:'numeric',month:'short'})} au ${f(sat,{day:'numeric',month:'long'})}`;
+  const box=$('#vtScroll'),phone=innerWidth<760;
+  const lar=Math.max(Math.round(box.clientWidth||900),760),hau=phone?720:Math.round(Math.min(Math.max(lar*.52,560),760));
+  const img=$('#vtImg');
+  img.classList.add('loading');$('#vtErr').hidden=true;box.hidden=false;
+  img.width=lar;img.height=hau;
+  img.src=`${VT}/vue_etudiant_horizontale.php?current_year=${y}&current_student=${encodeURIComponent(code)}&current_week=${w}&lar=${lar}&hau=${hau}`;
+  $('#vtOpen').href=`${VT}/index.php`;
+}
+$('#vtImg').addEventListener('load',()=>{
+  const img=$('#vtImg'),box=$('#vtScroll');img.classList.remove('loading');
+  /* sur téléphone, fait défiler jusqu'au jour d'aujourd'hui */
+  const t=new Date(),i=Math.round((t-weekStart)/864e5);
+  if(box.scrollWidth>box.clientWidth&&i>=0&&i<6)box.scrollLeft=Math.max(0,(i/6)*(img.width-50)-20);
+});
+$('#vtImg').addEventListener('error',()=>{$('#vtScroll').hidden=true;$('#vtErr').hidden=false});
+$('#wkPrev').addEventListener('click',()=>{weekStart=addDays(weekStart,-7);show()});
+$('#wkNext').addEventListener('click',()=>{weekStart=addDays(weekStart,7);show()});
+$('#wkNow').addEventListener('click',()=>{weekStart=thisWeek();show()});
+$('#vtCode').value=code;
+$('#vtForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#vtCode').value.trim();if(!/^\d+$/.test(v))return;code=v;try{localStorage.setItem(LSK,v)}catch(e){}e.target.closest('details').open=false;show()});
+let rt=0;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(!$('#edtView').hidden)show()},400)});
+
+function route(){
+  const edt=location.hash==='#edt';
+  $('#tasksView').hidden=edt;$('#edtView').hidden=!edt;
+  document.querySelector('.prog').hidden=edt;
+  document.querySelectorAll('.tabs a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.tab===(edt?'edt':'taches')));
+  if(edt&&!loaded)show();
+}
+window.addEventListener('hashchange',route);route();
 }
 </script>
 <script type="module">
